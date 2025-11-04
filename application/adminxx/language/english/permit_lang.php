@@ -1,0 +1,27 @@
+<?php
+/* \resources\gen_template\master\crud-newpage\language */
+$lang['permit'] = "Permit";
+$lang['permit_groupid'] = "Group";
+$lang['permit_typeid'] = "Permit";
+$lang['permit_condition'] = "permit_condition";
+$lang['permit_bookingid'] = "Booking Id";
+$lang['permit_picid'] = "permit_picid";
+$lang['permit_issuance_serialno'] = "Serial No";
+$lang['permit_issuance_date'] = "permit_issuance_date";
+$lang['permit_issuance_startdate'] = "Start Date";
+$lang['permit_issuance_expirydate'] = "Expiry Date";
+$lang['permit_issuance_processedby'] = "permit_issuance_processedby";
+$lang['permit_payment_invoiceno'] = "permit_payment_invoiceno";
+$lang['permit_payment_trainingfee'] = "permit_payment_trainingfee";
+$lang['permit_payment_new'] = "permit_payment_new";
+$lang['permit_payment_renew_oneyear'] = "permit_payment_renew_oneyear";
+$lang['permit_payment_renew_prorated'] = "permit_payment_renew_prorated";
+$lang['permit_payment_sst'] = "permit_payment_sst";
+$lang['permit_payment_total'] = "permit_payment_total";
+$lang['permit_payment_processedby'] = "permit_payment_processedby";
+$lang['permit_status'] = "Status";
+$lang['permit_remark'] = "permit_remark";
+
+$lang['permit_adp_completed'] = "Completed ADP";
+$lang['permit_evdp_comleted'] = "Completed EVDP";
+?>

@@ -1,0 +1,49 @@
+# Backup directories
+application_ori/
+old_php7/
+old_php803/
+old_php8112/
+resources_ori/
+
+# Backup files
+*.bak
+*_old.php
+*_old.php
+*_copy*
+*.orig
+*.7z
+*_test.php
+permitprintout.7z
+
+# Logs
+application/*/logs/*.php
+application/*/logs/elog_*.php
+
+# Cache
+application/*/cache/*
+application/*/cache/*.php
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+
+# Uploads (if large)
+uploads/*
+!uploads/.gitkeep
+
+# Database config (if contains sensitive data)
+# application/*/config/database.php
+
+# Environment files
+.env
+.env.local

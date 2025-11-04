@@ -1,0 +1,93 @@
+<!-- \resources\gen_template\master\crud-newpage\views -->
+<style type="text/css">
+    .nav-tabs {
+        padding-left: 15px;
+        margin-bottom: 0;
+        border: none;
+    }
+
+    .tab-content {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+    }
+</style>
+<div class="container-fluid">
+    <ol class="breadcrumb">
+        <li><a href="<?php echo site_url(); ?>"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> <?php echo $this->lang->line('home'); ?></a></li>
+        <li class="active"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+           Permit Cancellation
+        </li>
+    </ol>
+
+    <!--parentchildmenu-->
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h4><span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                Cancel Permit Application
+            </h4>
+        </div>
+        <div class="panel-body">
+            <div>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <form id="submitform" name="submitform" action="/admin/permitall/cancellation_action/" method="POST">
+                            <div class="row">
+
+
+                                <table class="table">
+                                    <tr>
+                                        <td>Booking Id: <b><?php echo $permit_bookingid;?></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Permit Type: <b><?php echo $permit_type_name_permit_typeid;?></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Permit Condition: <b><?php echo $permit_condition_name_permit_condition;?></b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        <h4>Please state your reason for cancellation:<sup><span class="glyphicon glyphicon-star text-danger" aria-hidden="true"></span></sup> <?php echo form_error('remark') ?></h4>
+                                        <textarea id="remark" name="remark" rows="7" cols="80"></textarea></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><input id="agree" name="agree" type="checkbox" value="y"> I confirm that the information given in this form is true, complete and accurate.<?php echo form_error('agree') ?><br><input id="submit" name="submit" type="submit" value="Submit" class="btn btn-primary"></td>
+                                    </tr>
+
+                                </table>
+
+                                <input type="hidden" name="permit_id" id="permit_id" value="<?php echo $permit_id; ?>">
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <a href="javascript:history.go(-1)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> <?php echo $this->lang->line('back'); ?></a>
+
+            <!--            <a href="javascript:return false;" class="btn btn-default" id="printthis"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Print</a>-->
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        var table = $("#mytable").DataTable({
+            responsive: true,
+        });
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            var target = $(e.target).attr("href") // activated tab
+            if (target == '#history') {
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust()
+                        .responsive.recalc();
+                });
+            }
+        });
+    });
+</script>

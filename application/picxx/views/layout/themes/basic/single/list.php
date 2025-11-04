@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title><?php echo $title; ?></title>
+        <!-- cdn -->
+        <script src="<?php echo base_url('resources/shared_js/jquery/2.1.4/dist/jquery.min.js'); ?>"></script>
+        
+
+        <link rel="stylesheet" href="<?php echo base_url('resources/shared_css/jquery-ui-themes/themes/smoothness/jquery-ui.min.css'); ?>">
+        <script src="<?php echo base_url('resources/shared_js/jquery-ui/jquery-ui.min.js'); ?>"></script>
+
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url('resources/shared_css/custom.css?v=0.1'); ?>">
+
+        <!-- include jhtmlarea css/js-->
+        <link href="<?php echo base_url('resources/shared_js/jHtmlArea/src/jHtmlArea_Website/style/jHtmlArea.css'); ?>" rel="stylesheet">
+        <!-- <link href="<?php echo base_url('resources/shared_js/jHtmlArea/src/jHtmlArea_Website/style/jHtmlArea.Editor.css'); ?>" rel="stylesheet"> -->
+        <script src="<?php echo base_url('resources/shared_js/jHtmlArea/src/jHtmlArea_Website/scripts/jHtmlArea-0.8.min.js'); ?>"></script>
+
+<!-- Datatables requirement -->
+<link rel="stylesheet" type="text/css" href="<?php echo base_url('resources/shared_js/DataTables/1.10.13/media/css/jquery.dataTables.min.css'); ?>">
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/1.10.13/media/js/jquery.dataTables.min.js'); ?>"></script>
+
+ <link rel="stylesheet" type="text/css" href="<?php echo base_url('resources/shared_js/DataTables/Buttons-1.2.4/css/buttons.dataTables.min.css'); ?>">
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/Buttons-1.2.4/js/dataTables.buttons.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/Buttons-1.2.4/js/buttons.colVis.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/Buttons-1.2.4/js/buttons.flash.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/Buttons-1.2.4/js/buttons.html5.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/Buttons-1.2.4/js/buttons.print.min.js'); ?>"></script>
+
+ <link rel="stylesheet" type="text/css" href="<?php echo base_url('resources/shared_js/DataTables/Responsive-2.1.1/css/responsive.dataTables.min.css'); ?>">
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/DataTables/Responsive-2.1.1/js/dataTables.responsive.min.js'); ?>"></script>
+
+<script type="text/javascript" src="<?php echo base_url('resources/shared_js/jszip/3.1.3/dist/jszip.js'); ?>"></script>
+<script src="<?php echo base_url('resources/shared_js/pdfmake/0.1.26/build/pdfmake.min.js'); ?>"></script>
+<script src="<?php echo base_url('resources/shared_js/pdfmake/0.1.26/build/vfs_fonts.js'); ?>"></script>
+
+        <link href="<?php echo base_url('resources/shared_js/select2/dist/css/select2.min.css'); ?>" rel="stylesheet" />
+        <script src="<?php echo base_url('resources/shared_js/select2/dist/js/select2.min.js'); ?>"></script>
+
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url('resources/shared_js/jquery-ui-timepicker-addon/1.4.5/dist/jquery-ui-timepicker-addon.min.css'); ?>">
+        <script src="<?php echo base_url('resources/shared_js/jquery-ui-timepicker-addon/1.4.5/dist/jquery-ui-timepicker-addon.min.js'); ?>"></script>
+        <script src="<?php echo base_url('resources/shared_js/jquery-ui-timepicker-addon/1.4.5/dist/jquery-ui-sliderAccess.js'); ?>"></script>
+
+        <link rel="stylesheet" type="text/css" href="<?php echo base_url('resources/shared_js/jquery-timepicker/1.8.8/jquery.timepicker.css'); ?>">
+        <script src="<?php echo base_url('resources/shared_js/jquery-timepicker/1.8.8/jquery.timepicker.min.js'); ?>"></script>
+<script src="<?php echo base_url('resources/shared_js/Minimal-Dropdown-Year/lib/year-select.js'); ?>"></script>
+
+        <script src="<?php echo base_url('resources/shared_js/jquery.alphanum/jquery.alphanum.js'); ?>"></script>
+
+        <script type = "text/javascript" src="<?php echo base_url('resources/shared_js/jquery.form/jquery.form.js'); ?>"	></script>
+
+        <style>
+            body{
+                padding-top: 70px;
+                width: 100% !important;
+                /* jhtmlarea label be white */
+                color: #000000 !important;
+            }
+
+            .container-fluid {
+                margin-right: auto;
+                margin-left: auto;
+                /*max-width: 960px !important;  or 950px */
+            }
+
+            /*          .dataTables_length {
+                        width: 50%;
+                        float: left;
+                      }
+            
+                      .dataTables_filter {
+                        width: 34%;
+                        float: left;
+                      }*/
+
+            .dt-buttons {
+                float: right;
+            }
+
+            .btn-file {
+                position: relative;
+                overflow: hidden;
+            }
+            .btn-file input[type=file] {
+                position: absolute;
+                top: 0;
+                right: 0;
+                min-width: 100%;
+                min-height: 100%;
+                font-size: 100px;
+                text-align: right;
+                filter: alpha(opacity=0);
+                opacity: 0;
+                outline: none;
+                background: white;
+                cursor: inherit;
+                display: block;
+            }
+
+            .uploadrestrict {
+                margin-bottom:15px;
+            }
+
+            .col-md-1 {
+                white-space: nowrap;
+            }
+
+        </style>
+
+        <script src="<?php echo base_url('resources/shared_js/custom.js?v=0.1') ?>"></script>
+    </head>
+    <body>
+        <?php echo (isset($menu) ? $menu : ''); ?>
+        <?php echo (isset($content) ? $content : ''); ?>
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-md-6"><?php echo $this->session->userdata('copyright_notice'); ?></div>
+                <div class="col-md-6 text-right"><?php echo $this->session->userdata('version_info'); ?></div>
+            </div>
+        </div>
+    </body>
+</html>

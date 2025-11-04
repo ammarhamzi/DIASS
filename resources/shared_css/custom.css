@@ -1,0 +1,74 @@
+#loading {
+   width: 100%;
+   height: 100%;
+   top: 0;
+   left: 0;
+   position: fixed;
+   display: block;
+   /* opacity: 0.7; */
+   background-color: #fff;
+   z-index: 99;
+   text-align: center;
+}
+
+#loading-image {
+  position: absolute;
+  top: 100px;
+  left: 240px;
+  z-index: 100;
+}
+
+/* jhtmlarea fixed for conflict with bootstrap.
+http://stackoverflow.com/questions/38307620/jhtmlarea-ui-not-proper
+ */
+.ToolBar li .h1,
+.ToolBar li .h2,
+.ToolBar li .h3,
+.ToolBar li .h4,
+.ToolBar li .h5,
+.ToolBar li .h6,
+.ToolBar li h1,
+.ToolBar li h2,
+.ToolBar li h3,
+.ToolBar li h4,
+.ToolBar li h5,
+.ToolBar li h6 {
+    margin: 0;
+}
+
+.dropdown-menu li a{
+    color: black !important;
+}
+
+.alert_custom{
+    background-color: #FF0000;
+    color: white;
+    padding: 3px;
+    font-size: small;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.double {
+  zoom: 2;
+  transform: scale(2);
+  -ms-transform: scale(2);
+  -webkit-transform: scale(2);
+  -o-transform: scale(2);
+  -moz-transform: scale(2);
+  transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  -webkit-transform-origin: 0 0;
+  -o-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -webkit-transform-origin: 0 0;
+}
+
+.table-borderless > tbody > tr > td,
+.table-borderless > tbody > tr > th,
+.table-borderless > tfoot > tr > td,
+.table-borderless > tfoot > tr > th,
+.table-borderless > thead > tr > td,
+.table-borderless > thead > tr > th {
+    border: none;
+}

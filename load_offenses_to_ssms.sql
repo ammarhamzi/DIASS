@@ -1,0 +1,553 @@
+-- ========================================
+-- Load Offense Data into offendlist_2025
+-- SQL Server Management Studio (SSMS)
+-- ========================================
+
+USE [your_database_name]; -- Change to your actual database name
+GO
+
+-- Ensure the table exists (create if needed based on plan.md schema)
+-- If the table already exists, comment out the CREATE TABLE section
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[offendlist_2025]') AND type in (N'U'))
+BEGIN
+  CREATE TABLE dbo.offendlist_2025 (
+    offence_id INT IDENTITY(1,1) PRIMARY KEY,
+    number INT NOT NULL,
+    violation NVARCHAR(500) NOT NULL,
+    description NVARCHAR(MAX) NULL,
+    demerit_point INT NULL,  -- Changed to allow NULL for accident cases
+    monetary_penalty NVARCHAR(50) NOT NULL,
+    offence_severity NVARCHAR(100) NOT NULL,  -- Increased size for longer severities
+    adp_suspension_text NVARCHAR(100) NOT NULL,  -- Increased size for "Under Investigation", etc.
+    avp_suspension_text NVARCHAR(100) NOT NULL,  -- Increased size
+    created_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    is_active BIT NOT NULL DEFAULT 1,
+    
+    CONSTRAINT CK_offence_severity CHECK (offence_severity IN ('Low Offence', 'Moderate Offence', 'High Offence', 'Critical Offence', 'Critical Offence - Before Investigation', 'Critical Offence - After Investigation')),
+    CONSTRAINT UQ_offence_number UNIQUE (number)
+  );
+  
+  -- Index for performance
+  CREATE NONCLUSTERED INDEX IX_offence_severity ON dbo.offendlist_2025(offence_severity);
+  CREATE NONCLUSTERED INDEX IX_offence_active ON dbo.offendlist_2025(is_active) WHERE is_active = 1;
+END
+GO
+
+-- ========================================
+-- Load JSON data
+-- ========================================
+
+DECLARE @json NVARCHAR(MAX);
+
+SET @json = N'
+[
+    {
+        "number": 1,
+        "violation": "Failure to Ensure Vehicles and Equipment are free from FOD",
+        "description": "Failure to ensure the vehicle/equipment is free from any Foreign Object Debris (FOD) that could potentially fall out and cause hazards in the airside area",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 2,
+        "violation": "Improper Way of Approaching Aircraft",
+        "description": "Failure to approach an aircraft at an angle and keep to its right side when approaching that aircraft during aircraft servicing.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 3,
+        "violation": "Improper Handling of Baggage or Cargo",
+        "description": "Failure to ensure baggage, cargo, or equipment is properly carried within designated baggage carts, cages, or equipment cages/brackets.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 4,
+        "violation": "Improper Usage of Headgear on Airside",
+        "description": "Wearing a cap, scarf, or beret on the airside without it being secured by a string or earmuff.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 5,
+        "violation": "Improper Use of Helmet",
+        "description": "Failure to wear a helmet while riding in the airside area, wearing an inappropriate helmet for motorcycle use, or wearing a helmet in a color other than white.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 6,
+        "violation": "Improper Towing Practices",
+        "description": "No vehicle/equipment shall be towed by another vehicle/equipment within the airside unless a suitable tow bar or suitable vehicle/equipment is used for that purpose.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 7,
+        "violation": "Violate No Seat, No Ride Policy",
+        "description": "Riding in or on a vehicle without being properly seated, violating the \"no seat, no ride\" policy.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 8,
+        "violation": "Improper Safety Vest",
+        "description": "Wearing a safety vest that is non-reflective, worn out, or dirty. Personnel must wear safety vests that are reflective, in good condition, and clean at all times.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 9,
+        "violation": "Failure to Maintain Vehicle or Equipment in good working conditions",
+        "description": "Failure to ensure that vehicles or equipment used in the airside area are maintained in good working conditions in accordance with the MTW technical inspections checklist.",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "2 weeks.",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 10,
+        "violation": "Failure to adhere to parking guidelines",
+        "description": "Parking a vehicle or equipment in a manner likely to cause danger, obstruction, or undue inconvenience to other users outside the movement area, including but not limited to: i) Parking outside designated areas. ii) Double parking",
+        "adp_suspension_period": "2 weeks.",
+        "avp_suspension_period": "2 weeks.",
+        "demerit_point": 4,
+        "monetary_penalty": "RM100",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 11,
+        "violation": "Spillage Incident (reported cases)",
+        "description": "Operating a vehicle that caused spillage in the airside area. This applies only to cases reported to the airside authority.",
+        "adp_suspension_period": "NIL",
+        "avp_suspension_period": "2 weeks.",
+        "demerit_point": 0,
+        "monetary_penalty": "NIL",
+        "offence_type": "Low Offence"
+    },
+    {
+        "number": 12,
+        "violation": "Carry out aircraft major maintenance at aircraft stand without approval",
+        "description": "",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 13,
+        "violation": "Carry out maintenance of vehicle or equipment at non-designated area",
+        "description": "",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 14,
+        "violation": "Driving on an unauthorized road and non-permissible taxiway crossing.",
+        "description": "No person shall drive any vehicle into the stated areas within the airside.Unless approval is given by the Airside Services Department. The stated areas are; i. Bunga Raya Complex Road ii. Baggage Handling Areas iii. All taxiway crossings except permissible taxiway crossing",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 15,
+        "violation": "Driving or towing or stopping a vehicle under the wing, tail, or fuselage of an aircraft",
+        "description": "No driver of any vehicle in the movement area shall stop or park the vehicle under the wing, tail, or fuselage of an aircraft unless the vehicle is being used in the course of refueling or technical servicing of the aircraft.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 16,
+        "violation": "Failure to secure equipment / vehicle with chock or lock",
+        "description": "",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 17,
+        "violation": "Failure to comply with any direction given by an authorized officer",
+        "description": "The driver of a vehicle within the airside shall comply with any direction or verbal instruction given by any authorized person who is for the time being engaged in the regulation of traffic within the airside.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 18,
+        "violation": "Failure to give way to shuttle buses or any vehicles / convoys that are escorted by airside officers.",
+        "description": "",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 19,
+        "violation": "Failure to inspect aircraft stands immediately after the aircraft has been serviced.",
+        "description": "This is to ensure that no foreign object or material that is likely to be hazardous to the operation of any aircraft is left on the aircraft stand.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 20,
+        "violation": "Failure to report any spillage or breakdown vehicle / equipment in airside area",
+        "description": "",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 21,
+        "violation": "Failure to Comply with Vehicle Requirements for the Temporary Entry Permit (TEP) application.",
+        "description": "The requirements include: a. Company Identification: Vehicles must prominently display the company''''s logo or name. b. Personal Vehicles: Personal vehicles are not eligible for a TEP application. c. Contractor Vehicles: Contractor vehicles used for construction work within the airside area must: Be white in color. Display a red and white checkered flag at the vehicle''''s highest point. d. Beacon Light: Vehicles entering the apron area must be equipped with a Beacon Light. e. Special Approval: Cranes and other high-operating vehicles require special approval for airside entry.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 22,
+        "violation": "Failure to comply with limitation on towing of trolleys/trailers/dollies at any one time and no combination allowed",
+        "description": "1. Service Roads – 4 trolleys/4 trailers/3 dollies 2. Taxiway crossing – 3 trolleys/3 trailers/2 dollies; 3. Terminal bypass – 2 trolleys/2 trailers/2 dollies; 4. Baggage areas – 2 trolleys/2 trailers",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 23,
+        "violation": "Failure to comply with Airside Traffic Signs and Markings",
+        "description": "Failure to follow traffic signage or road markings in the airside area, excluding the manoeuvring area (Runway and Taxiway).",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 24,
+        "violation": "Failure to wear Safety Vest on the apron /aircraft maneuvering area and work in progress area.",
+        "description": "Every person entering or performing work within the apron, including the aircraft stands and Work-in-Progress area, shall wear a high visibility safety vest at all times.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 25,
+        "violation": "Escorting Without a Valid Escort Permit",
+        "description": "Operating as an escort driver without obtaining a valid Escort Driver''''s Permit.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 26,
+        "violation": "Approaching aircraft with engines running",
+        "description": "The driver of a vehicle shall not cause the vehicle to approach any aircraft which has its engines running.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 27,
+        "violation": "Starting motor vehicle near refueling points",
+        "description": "Starting up a vehicle when it is in the vicinity of an aircraft (within the red line) which is being refueled.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 28,
+        "violation": "Reversing a vehicle towards an aircraft without a marshaller.",
+        "description": "The driver of a vehicle shall not cause the vehicle to reverse towards an aircraft in the movement area, except where the vehicle is used for servicing that aircraft and such reversing is carried out under the direction of a vehicle marshaller.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 29,
+        "violation": "Exceed vehicle speed limit",
+        "description": "Driving beyond the speed limit of 25 km/h on Service Roads. 45 km/h on Spine Roads or Perimeter Roads. 15 km/h in KLIA T2 BHS areas. 10 km/h in KLIA T1 BHS areas. 5 km/h on the Apron.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 30,
+        "violation": "Overtaking another vehicle",
+        "description": "Overtaking other vehicles traveling in the same direction in the following areas: - Service Roads. - Spine Roads/Perimeter Roads. - Apron.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "2 Months",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 31,
+        "violation": "Using mobile phone in the Apron and while driving",
+        "description": "Mobile phone use is prohibited in the apron, except for reporting within designated hammerhead areas. Drivers must not use a mobile phone while operating a vehicle, drivers must stop the vehicle before making or receiving calls.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 32,
+        "violation": "Failure to ensure vehicle/equipment compliance with Technical Inspection Checklist, including but not limited to:",
+        "description": "i. Flameproof or spark arresters (for petrol-powered vehicles). ii. Owner''''s insignia or company logo. iii. Green roundel. iv. Flashing yellow beacon light. v. Fire extinguisher. vi. \"No Smoking\" sign.",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "1 Month",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 33,
+        "violation": "Improper Vehicle Parking and Handling",
+        "description": "Leaving a vehicle unattended, failure to immediately remove a broken-down vehicle, obstructing other vehicles, or engaging in disorganized parking within the movement area, including but not limited to: - Parking inside the Equipment Restriction Area (ERA). - Parking outside the designated Equipment Parking Area (EPA).",
+        "adp_suspension_period": "1 Month",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 6,
+        "monetary_penalty": "RM200",
+        "offence_type": "Moderate Offence"
+    },
+    {
+        "number": 34,
+        "violation": "Carry out a test run of an aircraft engine at a place not designated for its purpose",
+        "description": "A person shall not carry out a test run of an aircraft engine except at a place designated by the aerodrome operator.",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 35,
+        "violation": "Driving over any hose during aircraft refueling.",
+        "description": "Drivers of vehicles must not drive over any hoses or bonding cables laid out during aircraft refueling.",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 36,
+        "violation": "Failing to comply with CAAM ALDIS Lamp operation",
+        "description": "Failing to comply accordingly with respective light signals when two-way radio communication breaks down on a runway or taxiway.",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 37,
+        "violation": "Failure to comply with traffic signage in manoeuvring area (Runway & Taxiway), including failure to give way to an authorised vehicle conducting inspection on taxiway or runway.",
+        "description": "",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 38,
+        "violation": "Failure to Wear Seat Belt",
+        "description": "It is mandatory for all vehicle occupants, including drivers and passengers in both the front and rear seats to wear seat belts at all times while the vehicle is in motion.",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 39,
+        "violation": "Driving a vehicle with EXPIRED Airside Driving Permit (ADP) in the airside area.",
+        "description": "",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 40,
+        "violation": "Using vehicle / Equipment without a valid Airside Vehicle Permit (AVP) in the airside area",
+        "description": "A person shall not use, cause, operate, or permit to be used a vehicle in a manoeuvring area unless it has been issued an airside vehicle permit by the aerodrome operator",
+        "adp_suspension_period": "2 Months",
+        "avp_suspension_period": "2 Months",
+        "demerit_point": 8,
+        "monetary_penalty": "RM300",
+        "offence_type": "High Offence"
+    },
+    {
+        "number": 41,
+        "violation": "Forging information on any permit and documents.",
+        "description": "",
+        "adp_suspension_period": "12 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 12,
+        "monetary_penalty": "RM300",
+        "offence_type": "Critical Offence"
+    },
+    {
+        "number": 42,
+        "violation": "Failure to give way to an aircraft and failure to give maximum clearance to aircraft in the movement area.",
+        "description": "Eg: Runway and Taxiway Incursion",
+        "adp_suspension_period": "12 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 12,
+        "monetary_penalty": "RM300",
+        "offence_type": "Critical Offence"
+    },
+    {
+        "number": 43,
+        "violation": "Failure to obtain prior clearance from the Duty Tower Controller before proceeding to any part of the maneuvering area.",
+        "description": "",
+        "adp_suspension_period": "12 Months",
+        "avp_suspension_period": "NIL",
+        "demerit_point": 12,
+        "monetary_penalty": "RM300",
+        "offence_type": "Critical Offence"
+    }
+]
+';
+
+-- Insert data with field mapping
+INSERT INTO offendlist_2025 (
+    number,
+    violation,
+    description,
+    demerit_point,
+    monetary_penalty,
+    offence_severity,        -- mapped from offence_type
+    adp_suspension_text,     -- mapped from adp_suspension_period
+    avp_suspension_text      -- mapped from avp_suspension_period
+)
+SELECT 
+    number,
+    violation,
+    ISNULL(description, '') AS description,  -- Handle empty descriptions
+    demerit_point,
+    monetary_penalty,
+    offence_type AS offence_severity,
+    adp_suspension_period AS adp_suspension_text,
+    avp_suspension_period AS avp_suspension_text
+FROM OPENJSON(@json)
+WITH (
+    number INT '$.number',
+    violation NVARCHAR(500) '$.violation',
+    description NVARCHAR(MAX) '$.description',
+    adp_suspension_period NVARCHAR(50) '$.adp_suspension_period',
+    avp_suspension_period NVARCHAR(50) '$.avp_suspension_period',
+    demerit_point INT '$.demerit_point',
+    monetary_penalty NVARCHAR(50) '$.monetary_penalty',
+    offence_type NVARCHAR(50) '$.offence_type'
+);
+
+-- ========================================
+-- Verification
+-- ========================================
+
+-- Verify 43 records loaded
+SELECT COUNT(*) AS TotalRecords FROM offendlist_2025;
+
+-- View records grouped by severity
+SELECT 
+    offence_severity,
+    COUNT(*) AS Count
+FROM offendlist_2025
+GROUP BY offence_severity
+ORDER BY 
+    CASE offence_severity
+        WHEN 'Low Offence' THEN 1
+        WHEN 'Moderate Offence' THEN 2
+        WHEN 'High Offence' THEN 3
+        WHEN 'Critical Offence' THEN 4
+    END;
+
+-- View all records
+SELECT 
+    offence_id,
+    number,
+    violation,
+    offence_severity,
+    demerit_point,
+    monetary_penalty,
+    adp_suspension_text,
+    avp_suspension_text,
+    created_at,
+    is_active
+FROM offendlist_2025
+ORDER BY number;
+
+-- Display success message
+DECLARE @RecordCount INT;
+SELECT @RecordCount = COUNT(*) FROM offendlist_2025;
+
+PRINT 'Data load complete!';
+PRINT 'Total records: ' + CAST(@RecordCount AS VARCHAR(10));
+GO
+
