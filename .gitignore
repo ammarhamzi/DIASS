@@ -23,27 +23,26 @@ application/*/logs/elog_*.php
 application/*/cache/*
 application/*/cache/*.php
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# # IDE
+# .vscode/
+# .idea/
+# *.swp
+# *.swo
 
-# OS
-.DS_Store
-Thumbs.db
+# # OS
+# .DS_Store
+# Thumbs.db
 
 # Temporary files
-*.tmp
-*.log
+ *.tmp
+ *.log
 
-# Uploads (if large)
-uploads/*
-!uploads/.gitkeep
+# # Uploads (if large)
+ uploads/*
+# !uploads/.gitkeep
 
 # Database config (if contains sensitive data)
 # application/*/config/database.php
 
 # Environment files
-.env
 .env.local

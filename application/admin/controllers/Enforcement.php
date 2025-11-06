@@ -434,12 +434,14 @@ class Enforcement extends MY_Controller
     {
         if ($this->permission->cp_create == true) {
 
+            // Get vehicle ID for redirect (needed after try-catch)
+            $vehicle_id = $this->input->post('vehicless');
+
             // Start transaction for data integrity
             $this->db->trans_start();
             
             try {
                 $hidden_type_arr = $this->input->post('hidden_type');
-                $hidden_summon_arr = $this->input->post('hidden_summon');
                 $hidden_date_arr = $this->input->post('hidden_date');
                 $hidden_time_arr = $this->input->post('hidden_time');
                 $hidden_location_arr = $this->input->post('hidden_location');
@@ -451,7 +453,6 @@ class Enforcement extends MY_Controller
                 $period_date_suspension = $this->input->post('period_date_suspension');
                 $addOffence_location_real = $this->input->post('addOffence_location_real');
                 $admin_action = $this->input->post('admin_action');
-                $vehicle_id = $this->input->post('vehicless');
 
                 // Get current revision
                 $revision = defined('CURRENT_OFFENCE_REVISION') ? CURRENT_OFFENCE_REVISION : '2025';
@@ -497,7 +498,6 @@ class Enforcement extends MY_Controller
                             'enforcements_date' => $hidden_date,
                             'enforcements_time' => $hidden_time_arr[$i],
                             'enforcements_offendlist_id' => $hidden_type,
-                            'enforcements_summon_no' => $hidden_summon_arr[$i],
                             'enforcements_notes' => $hidden_notes_arr[$i],
                             'enforcements_location' => $hidden_location_arr[$i],
                             'enforcements_offendlist_point' => $hidden_point_arr[$i],
@@ -548,7 +548,12 @@ class Enforcement extends MY_Controller
                 $this->session->set_flashdata('message', 'Failed to create enforcement. Please try again.');
             }
             
-            redirect(site_url('Enforcement'));
+            // Redirect back to the vehicle form page with the vehicle ID, or list page if ID not available
+            if (!empty($vehicle_id)) {
+                redirect(site_url('Enforcement/create_vehicle?i='.$vehicle_id));
+            } else {
+                redirect(site_url('Enforcement'));
+            }
         } else {
             redirect('/');
         }
@@ -586,7 +591,10 @@ class Enforcement extends MY_Controller
                 $permit_no = $adp_detail_list->permit_issuance_serialno;
                 $adp_class = $adp_detail_list->adppermit_verifybymahb_drivingarea;
                 $adp_number = $adp_detail_list->permit_issuance_serialno;
-                $adp_expiry = date('d-m-Y',strtotime($adp_detail_list->permit_issuance_expirydate));
+                if(!empty($adp_detail_list->permit_issuance_expirydate))
+                {
+                    $adp_expiry = date('d-m-Y',strtotime($adp_detail_list->permit_issuance_expirydate));
+                }
                 $merit_point = $this->Enforcement_model->sum_merit_point(1,$id);
             }
             //$adp_list = $this->Enforcement_model->find_adp_list($id);
@@ -619,12 +627,14 @@ class Enforcement extends MY_Controller
     {
         if ($this->permission->cp_create == true) {
             
+            // Get driver ID for redirect (needed after try-catch)
+            $driver_id = $this->input->post('driverss');
+            
             // Start transaction for data integrity
             $this->db->trans_start();
             
             try {
                 $hidden_type_arr = $this->input->post('hidden_type');
-                $hidden_summon_arr = $this->input->post('hidden_summon');
                 $hidden_date_arr = $this->input->post('hidden_date');
                 $hidden_time_arr = $this->input->post('hidden_time');
                 $hidden_location_arr = $this->input->post('hidden_location');
@@ -637,7 +647,6 @@ class Enforcement extends MY_Controller
                 $adpadv_no = $this->input->post('adpadv_no');
                 $addOffence_location_real = $this->input->post('addOffence_location_real');
                 $admin_action = $this->input->post('admin_action');
-                $driver_id = $this->input->post('driverss');
 
                 // Get current revision
                 $revision = defined('CURRENT_OFFENCE_REVISION') ? CURRENT_OFFENCE_REVISION : '2025';
@@ -681,7 +690,6 @@ class Enforcement extends MY_Controller
                             'enforcements_date' => $hidden_date,
                             'enforcements_time' => $hidden_time_arr[$i],
                             'enforcements_offendlist_id' => $hidden_type,
-                            'enforcements_summon_no' => $hidden_summon_arr[$i],
                             'enforcements_notes' => $hidden_notes_arr[$i],
                             //'enforcements_location' => $hidden_location_arr[$i],
                             'enforcements_offendlist_point' => $hidden_point_arr[$i],
@@ -732,7 +740,12 @@ class Enforcement extends MY_Controller
                 $this->session->set_flashdata('message', 'Failed to create enforcement. Please try again.');
             }
             
-            redirect(site_url('Enforcement'));
+            // Redirect back to the driver form page with the driver ID, or list page if ID not available
+            if (!empty($driver_id)) {
+                redirect(site_url('Enforcement/create_driver?i='.$driver_id));
+            } else {
+                redirect(site_url('Enforcement'));
+            }
         } else {
             redirect('/');
         }
@@ -743,7 +756,6 @@ class Enforcement extends MY_Controller
         $addOffence_type = $this->input->post('addOffence_type');
         $addOffence_date = $this->input->post('addOffence_date');
         $addOffence_time = $this->input->post('addOffence_time');
-        $addOffence_summon = $this->input->post('addOffence_summon');
         $addOffence_location = $this->input->post('addOffence_location');
         $addOffence_notes = $this->input->post('addOffence_notes');
 
@@ -756,7 +768,6 @@ class Enforcement extends MY_Controller
             "type"=>$addOffence_type,
             "date"=>$addOffence_date,
             "time"=>$addOffence_time,
-            "summon"=>$addOffence_summon,
             "location"=>$addOffence_location,
             "notes"=>$addOffence_notes,
         );
@@ -788,7 +799,6 @@ class Enforcement extends MY_Controller
                 <tr>
                     <th>Offence Type</th>
                     <th>Severity</th>
-                    <th>Summon No</th>
                     <th>Date / Time</th>
                     <th>Notes</th>
                     <th class="text-center">Monetary Penalty</th>
@@ -849,10 +859,6 @@ class Enforcement extends MY_Controller
                         <span class="badge badge-info"><?=$offend_det['offence_severity']?></span>
                     </td>
                     <td>
-                        <?=$rod['summon']?> 
-                        <input type="hidden" name="hidden_summon[]" value="<?=$rod['summon']?>">
-                    </td>
-                    <td>
                         <?=$rod['date']?> / <?=$rod['time']?> 
                         <input type="hidden" name="hidden_date[]" value="<?=$rod['date']?>">
                         <input type="hidden" name="hidden_time[]" value="<?=$rod['time']?>">
@@ -884,7 +890,7 @@ class Enforcement extends MY_Controller
                 {
                 ?>
                 <tr>
-                    <td colspan="9">No Info</td>
+                    <td colspan="8">No Info</td>
                 </tr>
                 <?php
                 }
@@ -972,7 +978,6 @@ class Enforcement extends MY_Controller
                         <th>Reg/Rule No</th>
                         <th>Date</th>
                         <th>Time</th>
-                        <th>Summon No</th>
                         <th>Notes</th>
                         <!-- <th>Location</th> -->
                         <th>Point</th>
@@ -993,7 +998,6 @@ class Enforcement extends MY_Controller
                         <td><?=$r->offendlist_violationNo?>-<?=$r->offendlist_regNo?></td>
                         <td><?=$r->enforcements_date?></td>
                         <td><?=$r->enforcements_time?></td>
-                        <td><?=$r->enforcements_summon_no?></td>
                         <td><?=$r->enforcements_notes?></td>
                         <!-- <td><?=$r->enforcements_location?></td> -->
                         <td><?=$r->enforcements_offendlist_point?></td>
@@ -1004,7 +1008,7 @@ class Enforcement extends MY_Controller
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th colspan="<?=$is_2025 ? '8' : '6'?>" class="text-right">Total Point</th>
+                    <th colspan="<?=$is_2025 ? '7' : '5'?>" class="text-right">Total Point</th>
                     <th><?=$total_point?></th>
                 </tr>
                 </tfoot>
@@ -1139,8 +1143,6 @@ class Enforcement extends MY_Controller
             'enforcements_main_statusDate'=>date('Y-m-d H:i:s'),
             'enforcements_main_updated_at' => date('Y-m-d H:i:s'),
             'enforcements_main_updated_by' => $this->session->id, 
-            'enforcements_main_cancel_date'=>date('Y-m-d H:i:s'),
-            'enforcements_main_cancel_by'=>$this->session->id,
             'enforcements_main_cancel_reason'=>$this->input->post('close_reason'),
         );
 

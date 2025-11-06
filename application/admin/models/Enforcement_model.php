@@ -315,10 +315,11 @@ $this->db->select("driver.driver_id, driver.driver_ic, driver.driver_name, drive
 
     function get_history_driver($driver_id)
     {
-        $this->db->select('*,userlist.user_name as userlist_user_name,cancel_user.user_name as cancel_user_name,enforcement_n.enforcements_date as offence_date,enforcement_n.enforcements_time as offence_time');
+        $this->db->select('*,userlist.user_name as userlist_user_name,userlist.user_email as userlist_user_email,cancel_user.user_name as cancel_user_name,cancel_user.user_email as cancel_user_email,updated_user.user_name as updated_user_name,updated_user.user_email as updated_user_email,enforcement_n.enforcements_date as offence_date,enforcement_n.enforcements_time as offence_time');
         $this->db->from('enforcement_main');
         $this->db->join('userlist','enforcement_main.enforcements_main_created_by = userlist.user_id','left');
         $this->db->join('userlist as cancel_user','enforcement_main.enforcements_main_cancel_by = cancel_user.user_id','left');
+        $this->db->join('userlist as updated_user','enforcement_main.enforcements_main_updated_by = updated_user.user_id','left');
         $this->db->join('company','enforcement_main.enforcements_main_company_id = company.company_id','left');
         $this->db->join('enforcement_n','enforcement_main.enforcements_main_id = enforcement_n.enforcements_main_id','right');
         $this->db->where('enforcement_main.enforcements_main_from_category','1');
@@ -330,10 +331,11 @@ $this->db->select("driver.driver_id, driver.driver_ic, driver.driver_name, drive
 
     function get_history_vehicle($vehicle_id)
     {
-        $this->db->select('*,userlist.user_name as userlist_user_name,cancel_user.user_name as cancel_user_name');
+        $this->db->select('*,userlist.user_name as userlist_user_name,userlist.user_email as userlist_user_email,cancel_user.user_name as cancel_user_name,cancel_user.user_email as cancel_user_email,updated_user.user_name as updated_user_name,updated_user.user_email as updated_user_email');
         $this->db->from('enforcement_main');
         $this->db->join('userlist','enforcement_main.enforcements_main_created_by = userlist.user_id','left');
         $this->db->join('userlist as cancel_user','enforcement_main.enforcements_main_cancel_by = cancel_user.user_id','left');
+        $this->db->join('userlist as updated_user','enforcement_main.enforcements_main_updated_by = updated_user.user_id','left');
         $this->db->join('company','enforcement_main.enforcements_main_company_id = company.company_id','left');
         $this->db->where('enforcement_main.enforcements_main_from_category','2');
         $this->db->where('enforcement_main.enforcements_main_active','1');

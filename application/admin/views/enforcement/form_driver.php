@@ -146,7 +146,7 @@
                                                         <th><?php echo 'ADP No';//$this->lang->line('user_email'); ?></th>
                                                         <!-- <th><?php //echo 'Remark';//$this->lang->line('user_email'); ?></th> -->
                                                         <th><?php echo 'Status';//$this->lang->line('user_email'); ?></th>
-                                                        <th class="no-sort">Offence List</th>
+                                                        <th class="no-sort">Actions List</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -213,7 +213,9 @@
                                                                 if($r->enforcements_main_status == 'Cancel')
                                                                 {
                                                                 ?>
-                                                                    <a href="javascript:void(0);" class="btn_cancel_reason" enc="<?=$id?>" ><span class="<?=$status_label_color?>"><?php echo $r->enforcements_main_status; ?></span></a>
+                                                                    <!-- Commented out clickable cancel button - now displayed as tag/badge -->
+                                                                    <!-- <a href="javascript:void(0);" class="btn_cancel_reason" enc="<?=$id?>" ><span class="<?=$status_label_color?>"><?php echo $r->enforcements_main_status; ?></span></a> -->
+                                                                    <span class="<?=$status_label_color?>"><?php echo $r->enforcements_main_status; ?></span>
                                                                     <input type="hidden" id="cancel_date_text_<?=$id?>" value="<?=date('d-m-Y h:i A',strtotime($r->enforcements_main_cancel_date))?>" >
                                                                     <input type="hidden" id="cancel_by_text_<?=$id?>" value="<?=$r->cancel_user_name?>" >
                                                                     <input type="hidden" id="cancel_reason_text_<?=$id?>" value="<?=$r->enforcements_main_cancel_reason?>" >
@@ -254,6 +256,21 @@
                                                                     <?php 
                                                                     }
                                                                     ?>
+                                                                    <button type="button" class="btn btn-xs btn-primary btn_offence_info" enc="<?=$id?>" data-toggle="tooltip" title="View Offence Information"><i class="fa fa-info-circle"></i></button>
+                                                                    <input type="hidden" id="created_by_text_<?=$id?>" value="<?=!empty($r->userlist_user_name) ? $r->userlist_user_name : '-'?>" >
+                                                                    <input type="hidden" id="created_email_text_<?=$id?>" value="<?=!empty($r->userlist_user_email) ? $r->userlist_user_email : '-'?>" >
+                                                                    <input type="hidden" id="created_date_text_<?=$id?>" value="<?=!empty($r->enforcements_main_created_at) ? date('d-m-Y h:i A',strtotime($r->enforcements_main_created_at)) : '-'?>" >
+                                                                    <input type="hidden" id="updated_by_text_<?=$id?>" value="<?=!empty($r->updated_user_name) ? $r->updated_user_name : '-'?>" >
+                                                                    <input type="hidden" id="updated_email_text_<?=$id?>" value="<?=!empty($r->updated_user_email) ? $r->updated_user_email : '-'?>" >
+                                                                    <input type="hidden" id="updated_date_text_<?=$id?>" value="<?=!empty($r->enforcements_main_updated_at) ? date('d-m-Y h:i A',strtotime($r->enforcements_main_updated_at)) : '-'?>" >
+                                                                    <input type="hidden" id="cancel_by_text_info_<?=$id?>" value="<?=($r->enforcements_main_status == 'Cancel' && !empty($r->cancel_user_name)) ? $r->cancel_user_name : '-'?>" >
+                                                                    <input type="hidden" id="cancel_email_text_info_<?=$id?>" value="<?=($r->enforcements_main_status == 'Cancel' && !empty($r->cancel_user_email)) ? $r->cancel_user_email : '-'?>" >
+                                                                    <input type="hidden" id="cancel_date_text_info_<?=$id?>" value="<?=($r->enforcements_main_status == 'Cancel' && !empty($r->enforcements_main_cancel_date)) ? date('d-m-Y h:i A',strtotime($r->enforcements_main_cancel_date)) : '-'?>" >
+                                                                    <input type="hidden" id="cancel_reason_text_info_<?=$id?>" value="<?=($r->enforcements_main_status == 'Cancel' && !empty($r->enforcements_main_cancel_reason)) ? $r->enforcements_main_cancel_reason : '-'?>" >
+                                                                    <input type="hidden" id="close_by_text_<?=$id?>" value="<?=($r->enforcements_main_status == 'Close' && !empty($r->updated_user_name)) ? $r->updated_user_name : '-'?>" >
+                                                                    <input type="hidden" id="close_email_text_<?=$id?>" value="<?=($r->enforcements_main_status == 'Close' && !empty($r->updated_user_email)) ? $r->updated_user_email : '-'?>" >
+                                                                    <input type="hidden" id="close_date_text_<?=$id?>" value="<?=($r->enforcements_main_status == 'Close' && !empty($r->enforcements_main_updated_at)) ? date('d-m-Y h:i A',strtotime($r->enforcements_main_updated_at)) : '-'?>" >
+                                                                    <input type="hidden" id="close_reason_text_info_<?=$id?>" value="<?=($r->enforcements_main_status == 'Close' && !empty($r->enforcements_main_cancel_reason)) ? $r->enforcements_main_cancel_reason : '-'?>" >
                                                                     <button type="button" class="btn btn-xs btn-default btn_history_offence_list" enc="<?=$r->enforcements_main_id?>" data-toggle="tooltip" title="View Offence List"><i class="fa fa-list"></i></button>
                                                                     <?php 
                                                                     if(in_array($r->enforcements_main_status,array('Open')))
@@ -276,19 +293,6 @@
                                                     }
                                                     ?>
                                                 </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th><?php echo 'Date of Offence';//$this->lang->line('user_username'); ?></th>
-                                                        <th><?php echo 'Submit By';//$this->lang->line('user_username'); ?></th>
-                                                        <!-- <th><?php //echo 'Permit Suspension';//$this->lang->line('user_name'); ?></th> -->
-                                                        <th><?php echo 'Period of Suspension';//$this->lang->line('user_email'); ?></th>
-                                                        <th><?php echo 'ADP No';//$this->lang->line('user_email'); ?></th>
-                                                        <!-- <th><?php //echo 'Remark';//$this->lang->line('user_email'); ?></th> -->
-                                                        <th><?php echo 'Status';//$this->lang->line('user_email'); ?></th>
-                                                        <th class="no-sort">Offence List</th>
-                                                    </tr>
-                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>
@@ -304,7 +308,6 @@
                                                 <table class="table table-bordered">
                                                     <tr>
                                                         <th>Offence Type</th>
-                                                        <th>Summon No</th>
                                                         <th>Date / Time</th>
                                                         <th>Notes</th>
                                                         <th>Location</th>
@@ -313,7 +316,6 @@
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                     <tr>
-                                                        <td></td>
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
@@ -500,18 +502,12 @@
                     <div class="form-group">
                         <label for="" class="col-sm-3 control-label">Date</label>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control dp_field" name="addOffence_date"  id="addOffence_date" placeholder="">
+                            <input type="text" class="form-control dp_field" name="addOffence_date"  id="addOffence_date" placeholder="" required autocomplete="off">
                         </div>
 
                         <label for="" class="col-sm-2 control-label">Time</label>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control timepicker_input" name="addOffence_time"  id="addOffence_time" placeholder="">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="" class="col-sm-3 control-label">Summon No</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" name="addOffence_summon"  id="addOffence_summon" placeholder="">
+                            <input type="text" class="form-control timepicker_input" name="addOffence_time"  id="addOffence_time" placeholder="" required autocomplete="off">
                         </div>
                     </div>
                     <div class="form-group" style="display: none;">
@@ -687,6 +683,123 @@
     <!-- /.modal -->
     </form>
 
+    <!-- Modal for Offence Workflow Information -->
+    <div class="modal" id="modal_offence_info_view">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Offence Workflow Information</h4>
+          </div>
+          <div class="modal-body" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+            <style>
+              .info-section {
+                border-left: 4px solid #3c8dbc;
+                padding: 12px 15px;
+                margin-bottom: 15px;
+                background-color: #f9f9f9;
+                border-radius: 4px;
+                clear: both;
+                width: 100%;
+                display: block;
+              }
+              .info-section.cancel {
+                border-left-color: #dd4b39;
+              }
+              .info-section.closed {
+                border-left-color: #00a65a;
+              }
+              .info-section.update {
+                border-left-color: #f39c12;
+              }
+              .info-label {
+                font-weight: 600;
+                color: #555;
+                font-size: 12px;
+                text-transform: uppercase;
+                margin-bottom: 3px;
+                letter-spacing: 0.5px;
+              }
+              .info-value {
+                color: #333;
+                font-size: 14px;
+                margin-bottom: 8px;
+                word-wrap: break-word;
+              }
+              .info-value.email {
+                color: #777;
+                font-size: 12px;
+                margin-top: -5px;
+                margin-bottom: 8px;
+              }
+              .info-value.email a {
+                color: #3c8dbc;
+                text-decoration: none;
+              }
+              .info-value.email a:hover {
+                text-decoration: underline;
+              }
+              .info-value.reason {
+                background-color: #fff;
+                padding: 8px 10px;
+                border-radius: 3px;
+                border: 1px solid #e0e0e0;
+                font-style: italic;
+                color: #555;
+              }
+              .info-empty {
+                color: #999;
+                font-style: italic;
+              }
+            </style>
+            
+            <div class="info-section" id="section_created">
+              <div class="info-label"><i class="fa fa-plus-circle"></i> Created</div>
+              <div class="info-value" id="dd_info_created_by">-</div>
+              <div class="info-value email" id="dd_info_created_email">-</div>
+              <div class="info-label" style="margin-top: 10px;">Date</div>
+              <div class="info-value" id="dd_info_created_date">-</div>
+            </div>
+
+            <div class="info-section update" id="section_updated" style="display: none;">
+              <div class="info-label"><i class="fa fa-edit"></i> Updated</div>
+              <div class="info-value" id="dd_info_updated_by">-</div>
+              <div class="info-value email" id="dd_info_updated_email">-</div>
+              <div class="info-label" style="margin-top: 10px;">Date</div>
+              <div class="info-value" id="dd_info_updated_date">-</div>
+            </div>
+
+            <div class="info-section cancel" id="section_cancelled" style="display: none;">
+              <div class="info-label"><i class="fa fa-ban"></i> Cancelled</div>
+              <div class="info-value" id="dd_info_cancel_by">-</div>
+              <div class="info-value email" id="dd_info_cancel_email">-</div>
+              <div class="info-label" style="margin-top: 10px;">Date</div>
+              <div class="info-value" id="dd_info_cancel_date">-</div>
+              <div class="info-label" style="margin-top: 10px;">Reason</div>
+              <div class="info-value reason" id="dd_info_cancel_reason">-</div>
+            </div>
+
+            <div class="info-section closed" id="section_closed" style="display: none;">
+              <div class="info-label"><i class="fa fa-check-circle"></i> Closed</div>
+              <div class="info-value" id="dd_info_close_by">-</div>
+              <div class="info-value email" id="dd_info_close_email">-</div>
+              <div class="info-label" style="margin-top: 10px;">Date</div>
+              <div class="info-value" id="dd_info_close_date">-</div>
+              <div class="info-label" style="margin-top: 10px;">Reason</div>
+              <div class="info-value reason" id="dd_info_close_reason">-</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
     <div class="modal" id="modal_close_reason_view">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -855,7 +968,7 @@ if (isset($id)) {
             success : function(data)
             {
                 // console.log(data);
-                $('#period_date_suspension').val(data.res);
+                $('#period_date_suspension').val(data.period_text || data.res);
             },
             complete : function()
             {
@@ -878,6 +991,63 @@ if (isset($id)) {
           $('#dd_cancel_date').html(cancel_date_text);
           $('#dd_reason').html(cancel_reason_text);
           $('#modal_cancel_reason_view').modal('show');
+        });
+
+        $('#mytable').on('click','.btn_offence_info',function(){
+            var enc = $(this).attr('enc'),
+                created_by_text = $('#created_by_text_'+enc).val(),
+                created_email_text = $('#created_email_text_'+enc).val(),
+                created_date_text = $('#created_date_text_'+enc).val(),
+                updated_by_text = $('#updated_by_text_'+enc).val(),
+                updated_email_text = $('#updated_email_text_'+enc).val(),
+                updated_date_text = $('#updated_date_text_'+enc).val(),
+                cancel_by_text = $('#cancel_by_text_info_'+enc).val(),
+                cancel_email_text = $('#cancel_email_text_info_'+enc).val(),
+                cancel_date_text = $('#cancel_date_text_info_'+enc).val(),
+                cancel_reason_text = $('#cancel_reason_text_info_'+enc).val(),
+                close_by_text = $('#close_by_text_'+enc).val(),
+                close_email_text = $('#close_email_text_'+enc).val(),
+                close_date_text = $('#close_date_text_'+enc).val(),
+                close_reason_text = $('#close_reason_text_info_'+enc).val();
+            
+            // Created section - always show
+            $('#dd_info_created_by').html(created_by_text !== '-' ? created_by_text : '<span class="info-empty">No data</span>');
+            $('#dd_info_created_email').html(created_email_text !== '-' ? '<a href="mailto:'+created_email_text+'">'+created_email_text+'</a>' : '<span class="info-empty">No email</span>');
+            $('#dd_info_created_date').html(created_date_text !== '-' ? created_date_text : '<span class="info-empty">No date</span>');
+            
+            // Updated section - only show if there's actual update data different from created
+            if((updated_by_text !== '-' || updated_date_text !== '-') && updated_date_text !== created_date_text){
+                $('#section_updated').show();
+                $('#dd_info_updated_by').html(updated_by_text !== '-' ? updated_by_text : '<span class="info-empty">No data</span>');
+                $('#dd_info_updated_email').html(updated_email_text !== '-' ? '<a href="mailto:'+updated_email_text+'">'+updated_email_text+'</a>' : '<span class="info-empty">No email</span>');
+                $('#dd_info_updated_date').html(updated_date_text !== '-' ? updated_date_text : '<span class="info-empty">No date</span>');
+            } else {
+                $('#section_updated').hide();
+            }
+            
+            // Cancelled section - only show if cancelled
+            if(cancel_by_text !== '-' || cancel_date_text !== '-'){
+                $('#section_cancelled').show();
+                $('#dd_info_cancel_by').html(cancel_by_text !== '-' ? cancel_by_text : '<span class="info-empty">Not cancelled</span>');
+                $('#dd_info_cancel_email').html(cancel_email_text !== '-' ? '<a href="mailto:'+cancel_email_text+'">'+cancel_email_text+'</a>' : '<span class="info-empty">No email</span>');
+                $('#dd_info_cancel_date').html(cancel_date_text !== '-' ? cancel_date_text : '<span class="info-empty">No date</span>');
+                $('#dd_info_cancel_reason').html(cancel_reason_text !== '-' ? cancel_reason_text : '<span class="info-empty">No reason provided</span>');
+            } else {
+                $('#section_cancelled').hide();
+            }
+            
+            // Closed section - only show if closed
+            if(close_by_text !== '-' || close_date_text !== '-'){
+                $('#section_closed').show();
+                $('#dd_info_close_by').html(close_by_text !== '-' ? close_by_text : '<span class="info-empty">Not closed</span>');
+                $('#dd_info_close_email').html(close_email_text !== '-' ? '<a href="mailto:'+close_email_text+'">'+close_email_text+'</a>' : '<span class="info-empty">No email</span>');
+                $('#dd_info_close_date').html(close_date_text !== '-' ? close_date_text : '<span class="info-empty">No date</span>');
+                $('#dd_info_close_reason').html(close_reason_text !== '-' ? close_reason_text : '<span class="info-empty">No reason provided</span>');
+            } else {
+                $('#section_closed').hide();
+            }
+            
+            $('#modal_offence_info_view').modal('show');
         });
 
         $('#mytable').on('click','.btn_cancel_offence',function(){
@@ -943,7 +1113,6 @@ if (isset($id)) {
 
         $('#frm_close_offence').on('submit',function(e){
             e.preventDefault();
-            alert('ayam')
             var enc = $('#modal_closeen_ids').val();
             $('.close_span_error').html('<p class="well well-sm"><img src = "<?php echo base_url(); ?>../resources/shared_img/preloader.GIF" class = "loader" /> Loading..</p>');
             $.ajax({
@@ -1027,6 +1196,7 @@ if (isset($id)) {
 
         $('.timepicker_input').timepicker({
             minuteStep: 5,
+            defaultTime: false
         });
 
         $('#modal_history_offence_list').on('hide.bs.modal',function(){
@@ -1084,13 +1254,13 @@ if (isset($id)) {
                     $.ajax({
                         type    : "POST",
                         url     : "<?php echo site_url("Enforcement/get_highest_period") ?>",
-                        data    : "p=1",
+                        data    : {p: 1, flow_type: 'driver'},
                         cache   : false,
                         dataType: 'json',
                         success : function(data)
                         {
                             // console.log(data);
-                            $('#period_date_suspension').val(data.res);
+                            $('#period_date_suspension').val(data.period_text || data.res);
                         },
                         complete : function()
                         {
@@ -1107,13 +1277,24 @@ if (isset($id)) {
             var $addOffence_type = $('#addOffence_type').val(),
                 $addOffence_date = $('#addOffence_date').val(),
                 $addOffence_time = $('#addOffence_time').val(),
-                $addOffence_summon = $('#addOffence_summon').val(),
                 $addOffence_location = $('#addOffence_location').val(),
                 $addOffence_notes = $('#addOffence_notes').val();
 
             if($addOffence_type == '')
             {
                 alert('Please select offence type!');
+                return false;
+            }
+
+            if($addOffence_date == '')
+            {
+                alert('Please select date!');
+                return false;
+            }
+
+            if($addOffence_time == '')
+            {
+                alert('Please select time!');
                 return false;
             }
 
@@ -1181,6 +1362,8 @@ if (isset($id)) {
         });
         
         $('#btn_add_offence').on('click',function(){
+            // Clear time field when modal opens to prevent autofill
+            $('#addOffence_time').val('');
             $('#modal_add_offence').modal('show');
         });
 

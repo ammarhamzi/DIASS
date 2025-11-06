@@ -69,7 +69,7 @@
     <div class="nav-tabs-custom">
         <ul class="nav nav-pills nav-justified">
             <li class="active"><a href="#tab_driver" data-toggle="pill">Driver List</a></li>
-            <li><a href="#tab_vehicle" data-toggle="pill">Vehicle Vehicle</a></li>
+            <li><a href="#tab_vehicle" data-toggle="pill">Vehicle List</a></li>
         
         </ul>
         <div class="tab-content">
@@ -233,12 +233,25 @@
 
         $('a[data-toggle="pill"]').on("shown.bs.tab", function (e) {
             var id = $(e.target).attr("href");
-            localStorage.setItem('selectedTab', id)
+            localStorage.setItem('selectedTab', id);
+            
+            // Ensure active class is properly set on tab navigation
+            $('ul.nav-pills li').removeClass('active');
+            $(e.target).closest('li').addClass('active');
+            
+            // Ensure active class is properly set on tab panes
+            $('.tab-content .tab-pane').removeClass('active');
+            $(id).addClass('active');
         });
 
         var selectedTab = localStorage.getItem('selectedTab');
         if (selectedTab != null) {
             $('a[data-toggle="pill"][href="' + selectedTab + '"]').tab('show');
+            // Also manually set active states
+            $('ul.nav-pills li').removeClass('active');
+            $('a[data-toggle="pill"][href="' + selectedTab + '"]').closest('li').addClass('active');
+            $('.tab-content .tab-pane').removeClass('active');
+            $(selectedTab).addClass('active');
         }
     });
     $(document).ready(function ()

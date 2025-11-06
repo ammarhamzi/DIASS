@@ -19,10 +19,6 @@ class PdfOutput extends CI_Controller
         $id = fixzy_decoder($id);
         $enforcement_main_det = $this->Enforcement_model->enforcement_main_data($id);
         
-        $date_enforcement_created = $enforcement_main_det->enforcements_main_created_at;
-        $date_enforcement_created = date('d-m-Y', strtotime($date_enforcement_created));
-        $date_enforcement_created_time = date('h:i A', strtotime($enforcement_main_det->enforcements_main_created_at));
-
         $location_real = $enforcement_main_det->enforcements_main_location;
         $offence_id = $enforcement_main_det->enforcements_main_driverOrVehicle;
 
@@ -66,18 +62,59 @@ class PdfOutput extends CI_Controller
             }
         }
 
-        // Calculate suspension end date based on created date and suspension period
-        $suspension_end_date = '';
-        if (isset($enforcement_main_det->enforcements_main_period_suspension) && !empty($enforcement_main_det->enforcements_main_period_suspension)) {
-            $suspension_end_date = calculate_suspension_end_date(
-                $enforcement_main_det->enforcements_main_created_at,
-                $enforcement_main_det->enforcements_main_period_suspension
-            );
-        }
-
         /*----------  CHILD ENFORCEMENT  ----------*/
         // Use get_offence_history which properly handles 2019, 2020, and 2025 revisions
         $child_enforcement_list = $this->Enforcement_model->get_offence_history($enforcement_main_det->enforcements_main_id, $enforcement_main_det->enforcements_main_rev_year);
+        
+        // Get date and time from the offence list table (first offence)
+        // Fallback to created_at if no offences found
+        if (!empty($child_enforcement_list) && isset($child_enforcement_list[0])) {
+            $first_offence = $child_enforcement_list[0];
+            $offence_date = isset($first_offence->enforcements_date) ? $first_offence->enforcements_date : $enforcement_main_det->enforcements_main_created_at;
+            $offence_time = isset($first_offence->enforcements_time) ? $first_offence->enforcements_time : '';
+            
+            // Format date: convert from YYYY-MM-DD to DD-MM-YYYY if needed
+            if (!empty($offence_date)) {
+                $date_enforcement_created = date('d-m-Y', strtotime($offence_date));
+            } else {
+                $date_enforcement_created = date('d-m-Y', strtotime($enforcement_main_det->enforcements_main_created_at));
+            }
+            
+            // Format time: keep as is if already formatted, otherwise format from timestamp
+            if (!empty($offence_time)) {
+                // If time is already in format like "12:00 AM", use it directly
+                // Otherwise, try to parse and format it
+                if (preg_match('/^\d{1,2}:\d{2}\s*(AM|PM)$/i', $offence_time)) {
+                    $date_enforcement_created_time = $offence_time;
+                } else {
+                    // Try to parse as time and format
+                    $date_enforcement_created_time = date('h:i A', strtotime($offence_time));
+                }
+            } else {
+                $date_enforcement_created_time = date('h:i A', strtotime($enforcement_main_det->enforcements_main_created_at));
+            }
+        } else {
+            // Fallback to created_at if no offences found
+            $date_enforcement_created = date('d-m-Y', strtotime($enforcement_main_det->enforcements_main_created_at));
+            $date_enforcement_created_time = date('h:i A', strtotime($enforcement_main_det->enforcements_main_created_at));
+        }
+
+        // Calculate suspension end date based on created date and suspension period
+        $suspension_end_date = '';
+        if (isset($enforcement_main_det->enforcements_main_period_suspension) && !empty($enforcement_main_det->enforcements_main_period_suspension)) {
+            $period_suspension = trim($enforcement_main_det->enforcements_main_period_suspension);
+            
+            // If period contains "Terminated" or "Blacklisted" (including "Terminated and Blacklisted"), use the same value for end date
+            if (stripos($period_suspension, 'Terminated') !== false || stripos($period_suspension, 'Blacklisted') !== false) {
+                $suspension_end_date = $period_suspension;
+            } else {
+                // Otherwise, calculate the end date
+                $suspension_end_date = calculate_suspension_end_date(
+                    $enforcement_main_det->enforcements_main_created_at,
+                    $enforcement_main_det->enforcements_main_period_suspension
+                );
+            }
+        }
         $child_result_arr = array();
         $remarks_arr = array();
         $total_point_demerit = 0;
@@ -150,14 +187,13 @@ class PdfOutput extends CI_Controller
 		$year = date('Y', $created_date);
 		$month = date('m', $created_date);
 
-		// Get running number for the same month/year
+		// Get running number for the same year
 		$this->db->where('YEAR(enforcements_main_created_at)', $year);
-		$this->db->where('MONTH(enforcements_main_created_at)', date('n', $created_date));
 		$this->db->where('enforcements_main_id <=', $enforcement_main_det->enforcements_main_id);
 		$this->db->where('enforcements_main_active', 1);
 		$running_number = $this->db->count_all_results('enforcement_main');
 
-		$serial_number = 'NOV/' . $year . '/' . $month . '/' . str_pad($running_number, 4, '0', STR_PAD_LEFT);
+		$serial_number = 'NoV/' . $year . '/' . $month . '/' . str_pad($running_number, 4, '0', STR_PAD_LEFT);
         $duty_officer_name = isset($this->session->name) ? $this->session->name : '';
 
         /*----------  PDF  ----------*/
