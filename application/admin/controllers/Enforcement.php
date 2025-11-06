@@ -1167,6 +1167,6 @@ class Enforcement extends MY_Controller
         die();
     }
 }
-;
+
 /* End of file User.php */
 /* Location: ./application/controllers/User.php */
