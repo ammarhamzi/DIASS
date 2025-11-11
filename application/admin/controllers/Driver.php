@@ -683,7 +683,7 @@ $r['driver_blacklistedremark'],*/
                 'permits_list' => $permits_list,
                 'companyhistory_list' => $companyhistory_list,
                 'driver_file_list' => $driver_file_list,
-                'driver_photo' => base_url() . 'uploads/files/' . $this->Enforcement_model->get_driver_photo($id),
+                'driver_photo' => base_url().'../uploads/files/'.$this->Enforcement_model->get_driver_photo($id),
                 'merit_point_txt' => $this->Enforcement_model->sum_merit_point(1, $id),
             ];
             $this->content = 'driver/driver_show';

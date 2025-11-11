@@ -182,7 +182,7 @@ class PdfOutput extends CI_Controller
         }
         $demerit_point_charged_display = ($total_point_demerit == 0) ? 'Under Investigation' : $total_point_demerit;
         $accumulated_demerit_display = ($total_collected_demerit_point == 0) ? 'Under Investigation' : $total_collected_demerit_point;
-        // Generate Serial Number (format: NOV/YYYY/MM/XXXX)
+        // Generate Serial Number (format: NoV/YYYY/MM/XXXX)
 		$created_date = strtotime($enforcement_main_det->enforcements_main_created_at);
 		$year = date('Y', $created_date);
 		$month = date('m', $created_date);
@@ -234,17 +234,20 @@ class PdfOutput extends CI_Controller
 						<td>
 							<table width="100%" border="0" cellpadding="0" cellspacing="0">
 								<tr align="center">
-									<td colspan="2">
+									<td colspan="3">
 										<table width="100%" border="0" cellpadding="5" cellspacing="0">
 											<tr>
 												<td width="15%" align="center" style="vertical-align:middle" rowspan="2">
 													<img src="../resources/shared_img/malaysia_airport_logo.png" height="80px">
 												</td>
-												<td width="85%" align="center" style="font-size: 11pt; font-weight: bold; vertical-align:middle;">
+												<td width="70%" align="center" style="font-size: 11pt; font-weight: bold; vertical-align:middle;">
 													AIRSIDE SERVICES DEPARTMENT<br />
 													MALAYSIA AIRPORTS (SEPANG) SDN BHD<br />
 													NOTICE OF VIOLATION IN ACCORDANCE TO<br />
 													THE AIRSIDE DEMERIT SYSTEM & MONETARY PENALTY HANDBOOK
+												</td>
+												<td width="15%" style="vertical-align:middle" rowspan="2">
+													&nbsp;
 												</td>
 											</tr>
 											<tr>

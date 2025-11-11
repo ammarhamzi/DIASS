@@ -15,7 +15,7 @@ class Authentication_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->where('user_isactive', '1');
-        $this->db->where('user_deleted_at');
+        $this->db->where('user_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('userlist');
         $query = $this->db->get();
         if ($query->num_rows() >= 1) {
@@ -30,7 +30,7 @@ class Authentication_model extends CI_Model
 
         $this->db->select('*');
         $this->db->where('user_isactive', '1');
-        $this->db->where('user_deleted_at');
+        $this->db->where('user_deleted_at IS NULL', NULL, FALSE);
         $this->db->where('user_username', $username);
         
         $find_keyword_malaysia = strpos($username,'@malaysiaairports.com.my');

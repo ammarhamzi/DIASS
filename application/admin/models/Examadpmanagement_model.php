@@ -20,13 +20,13 @@ class Examadpmanagement_model extends CI_Model {
 	when 'KLIA' then 'KLIA'
 	when 'KLIA2' then 'KLIA2'
 	end as exammanagement_location", FALSE);
-	$this->db->where('exammanagement_deleted_at');
+	$this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
 	$this->db->order_by('exammanagement_date', 'DESC');
 	$this->db->from('exammanagement');
 	
         $query = $this->db->get();
 
-        if($query->num_rows() >= 1){
+        if($query && $query->num_rows() >= 1){
             return $query->result();
         }else{
             return false;
@@ -38,12 +38,12 @@ class Examadpmanagement_model extends CI_Model {
   function get_by_id($id) {
     $this->db->select('*');
 	$this->db->where('exammanagement_id', $id);
-	$this->db->where('exammanagement_deleted_at');
+	$this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
 	$this->db->from('exammanagement');
 	
         $query = $this->db->get();
 
-        if($query->num_rows() >= 1){
+        if($query && $query->num_rows() >= 1){
             return $query->row();
         }else{
             return false;
@@ -62,12 +62,12 @@ class Examadpmanagement_model extends CI_Model {
 	when "KLIA2" then "KLIA2"
 	end as exammanagement_location', FALSE);
 	$this->db->where('exammanagement_id', $id);
-	$this->db->where('exammanagement_deleted_at');
+	$this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
 	$this->db->from('exammanagement');
 	
         $query = $this->db->get();
 
-        if($query->num_rows() >= 1){
+        if($query && $query->num_rows() >= 1){
             return $query->row();
         }else{
             return false;
@@ -106,7 +106,7 @@ class Examadpmanagement_model extends CI_Model {
 //	when 'KLIA2' then 'KLIA2'
 //	end as exammanagement_location", FALSE);
     $this->db->select("*", FALSE);
-	$this->db->where('exammanagement_deleted_at');
+	$this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
 	$this->db->from('exammanagement');
         //added on 6 Oct 2021
         $this->db->order_by('exammanagement_date', 'DESC');
@@ -139,7 +139,7 @@ class Examadpmanagement_model extends CI_Model {
     $this->db->select('count(*) as recordstotal');
     $this->db->from('exammanagement');
     
-	$this->db->where('exammanagement_deleted_at');
+	$this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
     $query = $this->db->get();
     $queryResult = $query->row();
     return $queryResult;
@@ -150,7 +150,7 @@ class Examadpmanagement_model extends CI_Model {
     $this->db->select('count(*) as recordsfiltered');
     $this->db->from('exammanagement');
     
-	$this->db->where('exammanagement_deleted_at');
+	$this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
     foreach ($columns as $column) {
       if($i==0){
         $this->db->where("$column like", "%$filter%");
@@ -167,7 +167,7 @@ class Examadpmanagement_model extends CI_Model {
     public function get_slot($condition,$drivingclass)
     {
         $this->db->select('*');
-        $this->db->where('exammanagement_deleted_at');
+        $this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
         if($condition!=""){
         $this->db->where('exammanagement_condition',$condition);
         }
@@ -179,7 +179,7 @@ class Examadpmanagement_model extends CI_Model {
 
         $query = $this->db->get();
 
-        if ($query->num_rows() >= 1) {
+        if ($query && $query->num_rows() >= 1) {
             return $query->result();
         } else {
             return false;
@@ -192,7 +192,7 @@ class Examadpmanagement_model extends CI_Model {
         $this->db->select('exammanagement_id, exammanagement_slottaken');
         $this->db->where('exammanagement_date', $date);
         $this->db->where('exammanagement_category', $session);
-        $this->db->where('exammanagement_deleted_at');
+        $this->db->where('exammanagement_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('exammanagement');
 
         $query = $this->db->get();

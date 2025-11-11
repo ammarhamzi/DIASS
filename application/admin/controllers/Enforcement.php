@@ -824,6 +824,10 @@ class Enforcement extends MY_Controller
                         $offence_lookup[$off['offendlist_id']] = $off;
                     }
                     
+                    // Initialize totals
+                    $total_point = 0;
+                    $total_monetary_penalty = 0;
+                    
                     foreach($_SESSION['offense_detail'] as $i => $rod)
                     {
                         // Get offence details from lookup
@@ -849,6 +853,14 @@ class Enforcement extends MY_Controller
                         
                         // Select correct period based on flow type
                         $display_period = $is_driver_flow ? $offend_det['adp_suspension_text'] : $offend_det['avp_suspension_text'];
+                        
+                        // Calculate totals
+                        $total_point += isset($offend_det['offendlist_offenddemeritpoint']) ? intval($offend_det['offendlist_offenddemeritpoint']) : 0;
+                        if(isset($offend_det['monetary_penalty']) && !empty($offend_det['monetary_penalty']) && $offend_det['monetary_penalty'] !== '-') {
+                            // Extract numeric value from monetary penalty (handles formats like "RM 500.00" or "500.00")
+                            $penalty_value = preg_replace('/[^0-9.]/', '', $offend_det['monetary_penalty']);
+                            $total_monetary_penalty += floatval($penalty_value);
+                        }
                 ?>
                 <tr>
                     <td>
@@ -884,6 +896,19 @@ class Enforcement extends MY_Controller
                 </tr>
                 <?php 
                         
+                    }
+                    
+                    // Display totals row
+                    if($total_point > 0 || $total_monetary_penalty > 0) {
+                        ?>
+                <tr style="background-color: #f5f5f5; font-weight: bold;">
+                    <td colspan="4" class="text-right">Total:</td>
+                    <td class="text-center"><strong><?=number_format($total_monetary_penalty, 2)?></strong></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"><strong><?=$total_point?></strong></td>
+                    <td class="text-center"></td>
+                </tr>
+                        <?php
                     }
                 }
                 else
@@ -970,37 +995,49 @@ class Enforcement extends MY_Controller
             <table class="table table-bordered tbl_offence_dt">
                 <thead>
                     <tr>
-                        <th>Category</th>
-                        <?php if($is_2025): ?>
+                        <th>Offence Type</th>
                         <th>Severity</th>
-                        <th>Monetary Penalty</th>
-                        <?php endif; ?>
-                        <th>Reg/Rule No</th>
-                        <th>Date</th>
-                        <th>Time</th>
+                        <th>Date / Time</th>
                         <th>Notes</th>
-                        <!-- <th>Location</th> -->
-                        <th>Point</th>
+                        <th class="text-center">Monetary Penalty</th>
+                        <th class="text-center">Period</th>
+                        <th class="text-center">Point</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $total_point = 0; 
+                    $total_point = 0;
+                    $total_monetary_penalty = 0;
                     foreach($q as $r){
                         $total_point += $r->enforcements_offendlist_point;
+                        if($is_2025 && isset($r->monetary_penalty) && !empty($r->monetary_penalty)) {
+                            // Extract numeric value from monetary penalty (handles formats like "RM 500.00" or "500.00")
+                            $penalty_value = preg_replace('/[^0-9.]/', '', $r->monetary_penalty);
+                            $total_monetary_penalty += floatval($penalty_value);
+                        }
                     ?>
                     <tr>
-                        <td><?=$r->off_cat_name?></td>
-                        <?php if($is_2025): ?>
-                        <td><?=isset($r->offence_severity) ? $r->offence_severity : ''?></td>
-                        <td><?=isset($r->monetary_penalty) ? $r->monetary_penalty : ''?></td>
-                        <?php endif; ?>
-                        <td><?=$r->offendlist_violationNo?>-<?=$r->offendlist_regNo?></td>
-                        <td><?=$r->enforcements_date?></td>
-                        <td><?=$r->enforcements_time?></td>
+                        <td><?=$r->offendlist_violationNo?> - <?=$r->offendlist_regNo?></td>
+                        <td>
+                            <?php if($is_2025 && isset($r->offence_severity) && !empty($r->offence_severity)): ?>
+                                <span class="badge badge-info"><?=$r->offence_severity?></span>
+                            <?php else: ?>
+                                <?=isset($r->off_cat_name) ? $r->off_cat_name : ''?>
+                            <?php endif; ?>
+                        </td>
+                        <td><?=$r->enforcements_date?> / <?=$r->enforcements_time?></td>
                         <td><?=$r->enforcements_notes?></td>
-                        <!-- <td><?=$r->enforcements_location?></td> -->
-                        <td><?=$r->enforcements_offendlist_point?></td>
+                        <td class="text-center">
+                            <?php if($is_2025 && isset($r->monetary_penalty) && !empty($r->monetary_penalty)): ?>
+                                <strong><?=$r->monetary_penalty?></strong>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-center">
+                            <?=isset($r->enforcements_period_suspension) && !empty($r->enforcements_period_suspension) ? $r->enforcements_period_suspension : '-'?>
+                        </td>
+                        <td class="text-center"><?=$r->enforcements_offendlist_point?></td>
                     </tr>
                     <?php 
                     }
@@ -1008,8 +1045,10 @@ class Enforcement extends MY_Controller
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th colspan="<?=$is_2025 ? '7' : '5'?>" class="text-right">Total Point</th>
-                    <th><?=$total_point?></th>
+                    <th colspan="4" class="text-right">Total:</th>
+                    <th class="text-center"><strong><?=number_format($total_monetary_penalty, 2)?></strong></th>
+                    <th class="text-center"></th>
+                    <th class="text-center"><strong><?=$total_point?></strong></th>
                 </tr>
                 </tfoot>
             </table>

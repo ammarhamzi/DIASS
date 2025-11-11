@@ -237,7 +237,7 @@
                                                                     if(in_array($r->enforcements_main_status,array('Open')))
                                                                     {
                                                                         $groupid = $this->session->userdata('groupid');
-                                                                        if($groupid == 12){
+                                                                        if($groupid == 12 || $groupid == 1){
                                                                     ?>
                                                                     <?=$btn_download_uploaded_file?>
                                                                     

@@ -13,7 +13,7 @@ class Uploadfiles_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->where('uploadfiles.uploadfiles_id', $id);
-        $this->db->where('uploadfiles_deleted_at');
+        $this->db->where('uploadfiles_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('uploadfiles');
 
         $query = $this->db->get();
@@ -38,7 +38,7 @@ class Uploadfiles_model extends CI_Model
 
             $this->db->where_in('uploadfiles.uploadfiles_processtype', ['permit_termination','permit_replacement']);
 
-        $this->db->where('uploadfiles_deleted_at');
+        $this->db->where('uploadfiles_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('uploadfiles');
         $this->db->join('company', 'company.company_id = uploadfiles.uploadfiles_company_id', 'left');
         $this->db->join('permit', 'permit.permit_id = uploadfiles.uploadfiles_permit_id', 'left');
@@ -67,7 +67,7 @@ class Uploadfiles_model extends CI_Model
         if ($processtype != "") {
             $this->db->where('uploadfiles.uploadfiles_processtype', $processtype);
         }
-        $this->db->where('uploadfiles_deleted_at');
+        $this->db->where('uploadfiles_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('uploadfiles');
         $this->db->join('company', 'company.company_id = uploadfiles.uploadfiles_company_id', 'left');
         $this->db->join('permit', 'permit.permit_id = uploadfiles.uploadfiles_permit_id', 'left');
@@ -89,7 +89,7 @@ class Uploadfiles_model extends CI_Model
         $this->db->select('*');
         $this->db->where('uploadfiles.uploadfiles_driver_id', $id);
         $this->db->where('uploadfiles.uploadfiles_processtype', 'driver_photo');
-        $this->db->where('uploadfiles_deleted_at');
+        $this->db->where('uploadfiles_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('uploadfiles');
         $this->db->order_by('uploadfiles_id', 'DESC');
         $this->db->limit(1, 0);
@@ -108,7 +108,7 @@ class Uploadfiles_model extends CI_Model
         $this->db->select('*');
         $this->db->where('uploadfiles.uploadfiles_driver_id', $id);
         $this->db->where('uploadfiles.uploadfiles_processtype', 'driver_info');
-        $this->db->where('uploadfiles_deleted_at');
+        $this->db->where('uploadfiles_deleted_at IS NULL', NULL, FALSE);
         $this->db->from('uploadfiles');
 
         $query = $this->db->get();

@@ -67,7 +67,7 @@ class Permit_model extends CI_Model
         $this->db->select('adppermit_verifybymahb_drivingarea, count(adppermit_id) as total');
         $this->db->join('permit', 'permit.permit_id = adppermit.adppermit_permit_id', 'left');
         $this->db->where('permit.permit_typeid', 1);
-        $this->db->where('permit.permit_deleted_at');
+        $this->db->where('permit.permit_deleted_at IS NULL', NULL, FALSE);
         $this->db->where('permit.permit_officialstatus', 'completed');
         $this->db->group_by('adppermit_verifybymahb_drivingarea','adppermit_id');
         $this->db->order_by('adppermit_verifybymahb_drivingarea', 'asc');
@@ -86,7 +86,7 @@ class Permit_model extends CI_Model
         $this->db->select('avppermit_avpcategory, count(avppermit_id) as total');
         $this->db->join('permit', 'permit.permit_id = avppermit.avppermit_permit_id', 'left');
         $this->db->where('permit.permit_typeid', 4);
-        $this->db->where('permit.permit_deleted_at');
+        $this->db->where('permit.permit_deleted_at IS NULL', NULL, FALSE);
         $this->db->where('permit.permit_officialstatus', 'completed');
         $this->db->group_by('avppermit_avpcategory','avppermit_id');
         $this->db->order_by('avppermit_avpcategory', 'asc');
